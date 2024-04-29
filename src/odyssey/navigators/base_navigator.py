@@ -23,6 +23,8 @@ class Navigator(ABC):
                  data_standardization: bool
         ):
 
+        # FIXME Input scaling not working correctly.
+
         self.mission = mission
         self.num_init_design = num_init_design
         self.init_method = init_method
