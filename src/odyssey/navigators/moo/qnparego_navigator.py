@@ -24,7 +24,6 @@ from botorch.utils.multi_objective.scalarization import get_chebyshev_scalarizat
 class qNParEGO_Navigator(Navigator):
 
     def __init__(self, 
-                 acq_function_type: Type,
                  acq_function_params: dict,
                  *args, 
                  **kwargs):
@@ -34,7 +33,7 @@ class qNParEGO_Navigator(Navigator):
         assert len(self.mission.funcs) > 1, "qNParEGO_Navigator requires multiple output functions. For single output functions, use SingleGPNavigator"
 
         # Acquisiiton Function Definition
-        self.acq_function_type = acq_function_type
+        self.acq_function_type = qNoisyExpectedImprovement
         self.acq_function_params = acq_function_params
 
         # Create model and acquisition function
@@ -58,7 +57,7 @@ class qNParEGO_Navigator(Navigator):
             )
 
             # Create Acquisition Function
-            expected_improvement = qNoisyExpectedImprovement(
+            expected_improvement = self.acq_function_type(
                 model = self.model,
                 objective = objective,
                 X_baseline = self.mission.train_X,

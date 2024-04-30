@@ -7,10 +7,6 @@ torch.set_default_dtype(torch.float64)
 # Base Navigator
 from odyssey.navigators.base_navigator import Navigator
 
-# Acquisition Functions
-from botorch.acquisition import ExpectedImprovement, UpperConfidenceBound, ProbabilityOfImprovement # Analytic ACQFS
- # TODO Add functionality for monte carlo acq functions
-
 # Model Fitting
 from botorch.models import SingleTaskGP
 from gpytorch.mlls import ExactMarginalLogLikelihood
@@ -53,6 +49,9 @@ class SingleGP_Navigator(Navigator):
     def create_acq_func(self, *args, **kwargs):
         # Find best_f
         # Will always be maximization, as parameters are inverted when minimizing
+        
+        # TODO Add Functionality for Monte Carlo Acquisition Functions
+        # FIXME Change for Monte Carlo Acquisition Functions
         self.acq_function_params['best_f'] = self.mission.train_Y.max().item()
 
         self.acq_function = self.acq_function_type(
@@ -61,8 +60,6 @@ class SingleGP_Navigator(Navigator):
                         )
         
     def _trajectory(self):
-
-        
 
         candidate, _ = optimize_acqf(
             acq_function = self.acq_function,
