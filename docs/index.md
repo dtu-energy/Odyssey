@@ -1,19 +1,30 @@
-# Hello, World!
+---
+hide:
+    - navigation
+    - toc
+---
 
-# Welcome to MkDocs
+# Home
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Welcome to the Odyssey Bayesian Optimization Module!
 
-## Commands
+The Odyssey Bayesian Optimization module is a powerful tool for optimizing complex functions and finding the best set of hyperparameters for machine learning models. It uses Bayesian optimization techniques to efficiently explore the search space and find the optimal solution.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+With Odyssey, you can easily define your objective function, specify the search space for hyperparameters, and let the module handle the rest. It intelligently explores the search space, evaluates different configurations, and adapts its search strategy based on the observed results.
 
-## Project layout
+Key Features of Odyssey Bayesian Optimization:
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+- Efficiently explores the search space to find the optimal solution
+
+- Handles both continuous and categorical hyperparameters
+
+- Supports parallel evaluations for faster optimization
+
+- Provides insightful visualizations and analysis of the optimization process
+
+- Allows customization of the acquisition function and exploration-exploitation trade-off
+
+Whether you are fine-tuning a deep learning model, optimizing a reinforcement learning algorithm, or searching for the best hyperparameters for any machine learning task, Odyssey Bayesian Optimization can help you achieve better results in less time.
+
+Get started with Odyssey today and unlock the full potential of your machine learning models!
+

@@ -1,3 +1,78 @@
-site_name: My Docs
+site_name: Odyssey
+
+# Repository
+repo_name: auto_lab/odyssey
+repo_url: https://gitlab.com/auto_lab/odyssey
+
+extra_css:
+  - stylesheets/extra.css
+
 theme:
   name: material
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  icon:
+    repo: fontawesome/brands/gitlab
+
+  custom_dir: docs/overrides
+
+  font: 
+    text: "Neo Sans Pro"
+    code: "Gintronic"
+
+  palette:
+    
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: dtu-light
+      toggle:
+        icon: material/brightness-3
+        name: Swich to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+
+  features:
+    - navigation.tabs # Show tabs
+    - navigation.tabs.sticky # Keep them on the screen
+    - navigation.top # Back to top button when scrolling up
+    - toc.follow
+    - search.suggest
+    - navigation.sections # Show sections in the sidebar
+    #- navigation.footer
+    #- announce.dismiss
+    
+    
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+  - Examples:
+    - Single Objective Optimization: examples/single-objective-optimization.md
+    - Multi Objective Optimization: examples/multi-objective-optimization.md
+  - API Reference: api.md
+  - About: about.md
+  - Contact: contact.md
+
+plugins:
+  - mkdocstrings
+  - search
+
+extra:
+  generator: false  
+  social:
+    - icon: fontawesome/brands/gitlab
+      link: https://capex.dtu.dk/
+      name: CAPeX Pioneer Institute
+    
+        
+    
+      
+
+  
+
