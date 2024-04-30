@@ -85,7 +85,6 @@ qute==3.0.11
 referencing==0.35.0
 rich==13.7.1
 rpds-py==0.18.0
-scientia-sdk @ file:///Users/kshitijgambhir/Downloads/sdlabs_sdks/python
 scikit-learn==1.4.2
 scipy==1.13.0
 scribble==1.0.0
