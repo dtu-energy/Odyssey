@@ -60,7 +60,6 @@ nav:
   - Contact: contact.md
 
 plugins:
-  - mkdocstrings
   - search
 
 extra:
