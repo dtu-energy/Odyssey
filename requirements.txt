@@ -87,7 +87,6 @@ rpds-py==0.18.0
 scikit-learn==1.4.2
 scipy==1.13.0
 scribble==1.0.0
-sdlabs_wrapper @ git+https://github.com/Atinary-technologies/sdlabs_wrapper.git@caee8884f2b720b02405143698f1aba2c21ecac3
 seaborn==0.13.2
 six==1.16.0
 SQLAlchemy==2.0.29
