@@ -56,6 +56,7 @@ nav:
     - Single Objective Optimization: examples/single-objective-optimization.md
     - Multi Objective Optimization: examples/multi-objective-optimization.md
   - API Reference:
+    - Mission: api_reference/mission.md
     - Navigators: api_reference/navigators.md
   - About: about.md
   - Contact: contact.md
