@@ -17,7 +17,7 @@ pages:
   image: python:latest
   script:
     - pip install mkdocs-material
-    - pip install 'mkdocstrings[python]''
+    - pip install 'mkdocstrings[python]'
     - mkdocs build --site-dir public
   artifacts:
     paths:
