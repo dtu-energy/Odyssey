@@ -1,11 +1,11 @@
 ## Single Objective Navigators
 
 **Base Navigator**
-::: odyssey.navigators.Navigator
+::: src.odyssey.navigators.Navigator
     handler: python
 
 **SingleGP_Navigator**
-::: odyssey.navigators.SingleGP_Navigator
+::: src.odyssey.navigators.SingleGP_Navigator
     handler: python
 
 ## Multi Objective Navigators

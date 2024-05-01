@@ -1,3 +1,3 @@
 Something about the mission here
 
-::: odyssey.mission.Mission
+::: src.odyssey.mission.Mission
