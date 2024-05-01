@@ -1,3 +1,7 @@
-Something about the mission here
+## **Base Mission**
 
-::: src.odyssey.mission.Mission
+::: odyssey.mission.Mission
+    handler: python
+    options:
+        members:
+            - __init__

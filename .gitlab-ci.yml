@@ -18,6 +18,7 @@ pages:
   script:
     - pip install mkdocs-material
     - pip install 'mkdocstrings[python]'
+    - pip install mkdocs-gen-files
     - mkdocs build --site-dir public
   artifacts:
     paths:
