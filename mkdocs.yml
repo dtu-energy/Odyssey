@@ -55,19 +55,21 @@ nav:
   - Examples:
     - Single Objective Optimization: examples/single-objective-optimization.md
     - Multi Objective Optimization: examples/multi-objective-optimization.md
-  - API Reference: api.md
+  - API Reference:
+    - Navigators: api_reference/navigators.md
   - About: about.md
   - Contact: contact.md
 
 plugins:
   - search
+  - mkdocstrings
 
 extra:
   generator: false  
-  social:
-    - icon: fontawesome/brands/gitlab
-      link: https://capex.dtu.dk/
-      name: CAPeX Pioneer Institute
+  # social:
+  #   - icon: fontawesome/regular/handshake
+  #     link: https://capex.dtu.dk/
+  #     name: CAPeX Pioneer Institute
     
         
     

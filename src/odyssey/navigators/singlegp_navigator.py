@@ -52,6 +52,7 @@ class SingleGP_Navigator(Navigator):
         
         # TODO Add Functionality for Monte Carlo Acquisition Functions
         # FIXME Change for Monte Carlo Acquisition Functions
+        
         self.acq_function_params['best_f'] = self.mission.train_Y.max().item()
 
         self.acq_function = self.acq_function_type(
