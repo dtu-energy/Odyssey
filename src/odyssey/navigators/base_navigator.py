@@ -1,6 +1,7 @@
-# Base Navigator Class
+### Base Navigator Class ###
 
 from abc import ABC, abstractmethod
+
 import torch
 torch.set_default_dtype(torch.float64)
 
