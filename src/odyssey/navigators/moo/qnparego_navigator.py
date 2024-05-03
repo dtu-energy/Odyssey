@@ -144,14 +144,3 @@ class qNParEGO_Navigator(Navigator):
 
         return candidate
 
-    def _relay(self, trajectory: torch.Tensor, observation: torch.Tensor):
-        """
-        Update the training data with the new trajectory and observation.
-
-        Args:
-            trajectory (torch.Tensor): The new trajectory.
-            observation (torch.Tensor): The observation of the new trajectory.
-        """
-        self.mission.train_X = torch.cat((self.mission.train_X, trajectory))
-        self.mission.train_Y = torch.cat((self.mission.train_Y, observation))
-

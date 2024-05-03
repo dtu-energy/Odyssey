@@ -72,11 +72,6 @@ class SingleGP_Navigator(Navigator):
 
         return candidate
 
-    def _relay(self, trajectory: torch.Tensor, observation: torch.Tensor):
-
-        self.mission.train_X = torch.cat((self.mission.train_X, trajectory))
-        self.mission.train_Y = torch.cat((self.mission.train_Y, observation))
-
         
 
 

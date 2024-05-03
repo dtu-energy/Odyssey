@@ -75,6 +75,11 @@ class Gryffin_Navigator(Navigator):
 
 
     def _upgrade(self):
+        
+        # Update Gryffin-specific observations
+        self.create_observations()
+        
+        # Update Model
         self.model = Gryffin(config_dict = self.config, silent = True)
 
     def _trajectory(self):
@@ -92,11 +97,3 @@ class Gryffin_Navigator(Navigator):
         final_candidate = final_candidate.unsqueeze(0)
 
         return final_candidate
-
-    def _relay(self, trajectory: torch.Tensor, observation: torch.Tensor):
-        # Update train X and Y
-        self.mission.train_X = torch.cat((self.mission.train_X, trajectory))
-        self.mission.train_Y = torch.cat((self.mission.train_Y, observation))
-        
-        # Update Gryffin-specific observations
-        self.create_observations()

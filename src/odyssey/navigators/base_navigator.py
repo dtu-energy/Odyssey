@@ -21,7 +21,8 @@ class Navigator(ABC):
                  num_init_design: int,
                  init_method: str,
                  input_scaling: bool,
-                 data_standardization: bool
+                 data_standardization: bool,
+                 display_always_max: bool = False,
         ):
 
         # FIXME Input scaling not working correctly.
@@ -32,15 +33,26 @@ class Navigator(ABC):
 
         self.input_scaling = input_scaling
         self.data_standardization = data_standardization
+        self.display_always_max = display_always_max
 
         if self.input_scaling:
-            self.traj_bounds = torch.tensor([[0.0,1.0]]).T # Unit Cube bounds
-            # TODO Change to multiple dimensinoal unit cube bounds - something with torch.stack I guess
+            self.traj_bounds = torch.stack((torch.zeros(self.mission.param_dims), torch.ones(self.mission.param_dims))) # Unit Cube bounds
         else:
             self.traj_bounds = self.mission.envelope.T
 
-        # Generate Initial train_X using given init method
+        
+
+        # TODO Route following section of init through trajectory, relay and upgrade methods
+
+        # Generate init train_X using given init method and probe the functions
         self.mission.train_X, self.mission.train_Y = self.generate_init_data()
+
+        # Convert init train data to display data
+        self.mission.display_X, self.mission.display_Y = self.generate_display_data()
+
+        # Log init display data
+        data_dict = self.generate_log_data(init = False) # FIXME Should be True, but functionality is not working
+        self.mission.write_to_logfile(data = data_dict)
         
 
     
@@ -59,10 +71,49 @@ class Navigator(ABC):
         init_output = self.probe(input_data = init_input, init = True)
 
         return init_input, init_output
+    
+    def generate_display_data(self):
+        if self.input_scaling:
+            display_input = unnormalize(self.mission.train_X.clone(), self.mission.envelope)
+        else:
+            display_input = self.mission.train_X.clone()
+
+        if self.data_standardization:
+            display_output = unstandardize(self.mission.train_Y.clone(), 
+                                           mean = self.init_train_Y_mean, 
+                                           std = self.init_train_Y_std
+                                           )
+        else:
+            display_output = self.mission.train_Y.clone()
+
+            
+        if self.display_always_max:
+            # Minimization (descend) objectives were inverted during optimization
+            # Values of these objectives are now inverted back for displaying
+            descend_indices = [idx for idx, value in enumerate(self.mission.maneuvers) if value == 'descend']
+            display_output[:, descend_indices] *= -1
+        else:
+            pass
+
+        return display_input, display_output
+    
+    def generate_log_data(self, init: bool = False):
+        if init:
+            display_X_subset = self.mission.display_X[-self.num_init_design:]
+            display_Y_subset = self.mission.display_Y[-self.num_init_design:]
+        else:
+            display_X_subset = self.mission.display_X[-1]
+            display_Y_subset = self.mission.display_Y[-1]
+
+        trajectory_dict = {f"param_{i+1}": value.item() for i, value in enumerate(display_X_subset)}
+        observation_dict = {f"objective_{i+1}": value.item() for i, value in enumerate(display_Y_subset)}
+        data_dict = {**trajectory_dict, **observation_dict}
+
+        return data_dict
 
     @abstractmethod
     def _upgrade(self, *args, **kwargs):
-        """Method that returns the model specific to the navigator """
+        """Update model with specific requirements"""
         pass
 
     def upgrade(self, *args, **kwargs):
@@ -70,18 +121,38 @@ class Navigator(ABC):
     
     @abstractmethod
     def _trajectory(self, *args, **kwargs):
+        """
+        Translate model-specific parameter recommendation to compatible format (torch.tensor)
+        """
         pass
 
     def trajectory(self, *args, **kwargs):
         return self._trajectory(*args, **kwargs)
-        
-    
-    @abstractmethod
-    def _relay(self, *args, **kwargs):
-        pass
 
-    def relay(self, *args, **kwargs):
-        return self._relay(*args, **kwargs)
+    def relay(self, trajectory, observation, *args, **kwargs):
+
+        """
+        Update the training data and display data with the new trajectory and observation. 
+        Retain standardization and scaling for training data, but revert to original scale for display data.
+        Log display data to mission logfile
+
+        Args:
+            trajectory (torch.Tensor): The new trajectory.
+            observation (torch.Tensor): The observation of the new trajectory.
+        """
+
+        # Relay train data
+        self.mission.train_X = torch.cat((self.mission.train_X, trajectory))
+        self.mission.train_Y = torch.cat((self.mission.train_Y, observation))
+
+        # Relay display data 
+        self.mission.display_X, self.mission.display_Y = self.generate_display_data()
+
+        # Log data
+        ## Case where only one trajectory point and one observation point is observed (q=1)
+        data_dict = self.generate_log_data(init = False)
+        self.mission.write_to_logfile(data = data_dict)
+        
     
     def probe(self, input_data: torch.tensor, init: bool, *args, **kwargs):
 
@@ -95,11 +166,11 @@ class Navigator(ABC):
             output = self.mission.funcs[f](input_data)
 
             # Ensure Maximization problem
-            if self.mission.maneuvers[f] == 'ascend':
-                pass
-            elif self.mission.maneuvers[f] == 'descend':
+            if self.mission.maneuvers[f] == 'descend':
                 output = -output
-
+            else:
+                pass
+                
             # Ensure > 1D output
             if output.dim() < 2:
                 output = output.unsqueeze(-1)
