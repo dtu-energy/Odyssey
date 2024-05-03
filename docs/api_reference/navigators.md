@@ -9,6 +9,7 @@
             - probe
             - relay
             - upgrade
+        line_length: 5
 
 
 ## **Single Objective Navigators**
@@ -20,11 +21,32 @@
             - __init__
 
 ## **Multi Objective Navigators**
+::: odyssey.navigators.moo.qNParEGO_Navigator
+    handler: python
+    options:
+        members:
+            - __init__
 
-<!-- ::: odyssey.navigators.Gryffin_Navigator -->
+::: odyssey.navigators.moo.Gryffin_Navigator
+    handler: python
+    options:
+        members:
+            - __init__
+
+
+::: odyssey.navigators.moo.Dragonfly_Navigator
+    handler: python
+    options:
+        members:
+            - __init__
+
+
+::: odyssey.navigators.moo.Falcon_Navigator
+    handler: python
+    options:
+        members:
+            - __init__
 
 
 
-
-
-
+                

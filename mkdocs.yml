@@ -70,6 +70,9 @@ plugins:
       python:
         paths: [src]
         options: 
+
+          docstring_section_style: list
+          
           # Headings
           show_symbol_type_heading: true
           show_symbol_type_toc: true
@@ -86,17 +89,11 @@ plugins:
           separate_signature: true
           show_signature_annotations: true
           signature_crossrefs: true
+          line_length: 1
+
+markdown_extensions:
+- toc: 
+    toc_depth: 3
 
 extra:
   generator: false  
-  # social:
-  #   - icon: fontawesome/regular/handshake
-  #     link: https://capex.dtu.dk/
-  #     name: CAPeX Pioneer Institute
-    
-        
-    
-      
-
-  
-

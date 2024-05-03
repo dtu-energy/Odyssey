@@ -34,7 +34,7 @@ class Navigator(ABC):
 
         if self.input_scaling:
             self.traj_bounds = torch.tensor([[0.0,1.0]]).T # Unit Cube bounds
-            # TODO Change to multiple dimensinoal unit cube bounds
+            # TODO Change to multiple dimensinoal unit cube bounds - something with torch.stack I guess
         else:
             self.traj_bounds = self.mission.envelope.T
 

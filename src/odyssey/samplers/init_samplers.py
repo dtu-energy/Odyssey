@@ -19,3 +19,5 @@ def init_grid(bounds, num_points):
 
     return x
 
+
+
