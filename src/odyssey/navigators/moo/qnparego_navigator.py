@@ -59,6 +59,8 @@ class qNParEGO_Navigator(Navigator):
         >>> navigator.upgrade()
     """
 
+    requires_init_data = True
+
     def __init__(self, acq_function_params: dict, *args, **kwargs):
         """
         Initialize the qNParEGO_Navigator.

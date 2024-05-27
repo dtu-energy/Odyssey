@@ -1,6 +1,7 @@
 ### Base Navigator Class ###
 
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import torch
 torch.set_default_dtype(torch.float64)
@@ -11,25 +12,34 @@ from odyssey.mission import Mission
 # Utils
 from odyssey.utils.utils import normalize, unnormalize, standardize, unstandardize
 
-# Init Samplers
-from odyssey.samplers import init_grid
-
 class Navigator(ABC):
-    
+    requires_init_data = True
+
     def __init__(self,
                  mission: Mission, 
-                 num_init_design: int,
-                 init_method: str,
-                 input_scaling: bool,
-                 data_standardization: bool,
+                 num_init_design: int = None,
+                 init_method:  Optional['Navigator'] = None,
+                 input_scaling: bool = False,
+                 data_standardization: bool = False,
                  display_always_max: bool = False,
         ):
 
-        # FIXME Input scaling not working correctly.
-
         self.mission = mission
-        self.num_init_design = num_init_design
+        self.num_init_design = num_init_design if num_init_design is not None else 0
         self.init_method = init_method
+    
+        # Check if Navigator requires init data
+        ## Sampler-Type Navigators do not require init data
+        ## Acquisition-Type Navigators require init data
+
+        if self.requires_init_data:
+            if num_init_design is None or init_method is None:
+                raise ValueError("This navigator requires initial data, but num_init_design or init_method was not provided.")
+        else:
+            if num_init_design is not None or init_method is not None:
+                raise ValueError("This navigator does not require initial data, but num_init_design or init_method was provided.")
+
+        # FIXME Input scaling not working correctly.
 
         self.input_scaling = input_scaling
         self.data_standardization = data_standardization
@@ -43,25 +53,34 @@ class Navigator(ABC):
         
 
         # TODO Route following section of init through trajectory, relay and upgrade methods
+        if self.requires_init_data:
+            # Generate init train_X using given init method and probe the functions
+            self.mission.train_X, self.mission.train_Y = self.generate_init_data()
 
-        # Generate init train_X using given init method and probe the functions
-        self.mission.train_X, self.mission.train_Y = self.generate_init_data()
+            # Convert init train data to display data
+            self.mission.display_X, self.mission.display_Y = self.generate_display_data()
 
-        # Convert init train data to display data
-        self.mission.display_X, self.mission.display_Y = self.generate_display_data()
+            # Log init display data
+            data_dict = self.generate_log_data(init = True) 
+            self.mission.write_to_logfile(data = data_dict)
 
-        # Log init display data
-        data_dict = self.generate_log_data(init = True) 
-        self.mission.write_to_logfile(data = data_dict)
-        
+        else:
+
+            self.mission.train_X = torch.empty((0, mission.param_dims))
+            self.mission.train_Y = torch.empty((0, mission.output_dims))
+
+            self.mission.display_X = self.mission.train_X.clone()
+            self.mission.display_Y = self.mission.train_Y.clone()
+
 
     
     def generate_init_data(self):
-        
-        if self.init_method == 'grid':
-            init_input = init_grid(self.mission.envelope, self.num_init_design)
-        else:
-            pass
+
+        # Generate initial input data using init method
+        init_input = torch.empty((0, self.mission.param_dims))
+        for i in range(self.num_init_design):
+            init_input = torch.cat((init_input, self.init_method.trajectory()))
+            self.init_method.upgrade()
 
         # Initial Input Scaling
         if self.input_scaling:

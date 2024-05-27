@@ -17,6 +17,7 @@ from botorch.optim import optimize_acqf
 
 
 class SingleGP_Navigator(Navigator):
+    requires_init_data = True
 
     def __init__(self,
                  acq_function_type: Type,
@@ -27,7 +28,6 @@ class SingleGP_Navigator(Navigator):
         
         super().__init__(*args, **kwargs)
 
-        #assert len(self.mission.envelope) == 1, "SingleGPNavigator only supports single input missions"
         assert len(self.mission.funcs) == 1, "SingleGPNavigator only supports single output missions"
 
         # Acquisition Function definition
