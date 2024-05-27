@@ -69,7 +69,7 @@ class Mission(ABC):
         log_df = self.read_logfile()
 
         # Append data to logfile
-        append_df = pd.DataFrame(data, index = [0])
+        append_df = pd.DataFrame(data)
 
         if set(append_df.columns) == set(log_df.columns):
             if len(log_df) == 0:

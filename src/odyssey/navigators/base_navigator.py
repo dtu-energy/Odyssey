@@ -51,7 +51,7 @@ class Navigator(ABC):
         self.mission.display_X, self.mission.display_Y = self.generate_display_data()
 
         # Log init display data
-        data_dict = self.generate_log_data(init = False) # FIXME Should be True, but functionality is not working
+        data_dict = self.generate_log_data(init = True) 
         self.mission.write_to_logfile(data = data_dict)
         
 
@@ -105,8 +105,12 @@ class Navigator(ABC):
             display_X_subset = self.mission.display_X[-1]
             display_Y_subset = self.mission.display_Y[-1]
 
-        trajectory_dict = {f"param_{i+1}": value.item() for i, value in enumerate(display_X_subset)}
-        observation_dict = {f"objective_{i+1}": value.item() for i, value in enumerate(display_Y_subset)}
+        if display_X_subset.dim() == 1 or display_Y_subset.dim() == 1:
+            display_X_subset = display_X_subset.unsqueeze(0)
+            display_Y_subset = display_Y_subset.unsqueeze(0)
+
+        trajectory_dict = {f'param_{i+1}': display_X_subset[:, i].tolist() for i in range(display_X_subset.shape[1])}
+        observation_dict = {f'objective_{i+1}': display_Y_subset[:, i].tolist() for i in range(display_Y_subset.shape[1])}
         data_dict = {**trajectory_dict, **observation_dict}
 
         return data_dict
