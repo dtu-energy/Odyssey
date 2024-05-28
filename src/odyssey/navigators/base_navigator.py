@@ -1,7 +1,7 @@
 ### Base Navigator Class ###
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Union
 
 import torch
 torch.set_default_dtype(torch.float64)
@@ -18,7 +18,7 @@ class Navigator(ABC):
     def __init__(self,
                  mission: Mission, 
                  num_init_design: int = None,
-                 init_method:  Optional['Navigator'] = None,
+                 init_method:  Optional[Union['Navigator']] = None,
                  input_scaling: bool = False,
                  data_standardization: bool = False,
                  display_always_max: bool = False,
@@ -27,16 +27,22 @@ class Navigator(ABC):
         self.mission = mission
         self.num_init_design = num_init_design if num_init_design is not None else 0
         self.init_method = init_method
+        
     
         # Check if Navigator requires init data
         ## Sampler-Type Navigators do not require init data
         ## Acquisition-Type Navigators require init data
 
         if self.requires_init_data:
-            if num_init_design is None or init_method is None:
+
+            if self.num_init_design == 0 or init_method is None:
                 raise ValueError("This navigator requires initial data, but num_init_design or init_method was not provided.")
+            
+            if self.num_init_design < 0:
+                raise ValueError("num_init_design must be a positive integer.")
+            
         else:
-            if num_init_design is not None or init_method is not None:
+            if self.num_init_design != 0 or init_method is not None:
                 raise ValueError("This navigator does not require initial data, but num_init_design or init_method was provided.")
 
         # FIXME Input scaling not working correctly.
@@ -54,6 +60,9 @@ class Navigator(ABC):
 
         # TODO Route following section of init through trajectory, relay and upgrade methods
         if self.requires_init_data:
+            
+            self.init_method.mission = self.mission
+            
             # Generate init train_X using given init method and probe the functions
             self.mission.train_X, self.mission.train_Y = self.generate_init_data()
 
@@ -118,8 +127,8 @@ class Navigator(ABC):
     
     def generate_log_data(self, init: bool = False):
         if init:
-            display_X_subset = self.mission.display_X[-self.num_init_design:]
-            display_Y_subset = self.mission.display_Y[-self.num_init_design:]
+            display_X_subset = self.mission.display_X
+            display_Y_subset = self.mission.display_Y
         else:
             display_X_subset = self.mission.display_X[-1]
             display_Y_subset = self.mission.display_Y[-1]

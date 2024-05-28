@@ -9,6 +9,10 @@ from .moo.dragonfly_navigator import Dragonfly_Navigator
 
 # Sampler Navigators
 from .sampler_navigators.grid_navigator import Grid_Navigator
+from .sampler_navigators.sobol_navigator import Sobol_Navigator
+
+# DataLoader 
+from .dataloader.dataloader import DataLoader
 
 # Acquisition Functions
 from botorch.acquisition import ExpectedImprovement, qExpectedImprovement, qNoisyExpectedImprovement, NoisyExpectedImprovement
