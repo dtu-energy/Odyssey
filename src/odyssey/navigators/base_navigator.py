@@ -88,12 +88,14 @@ class Navigator(ABC):
         # Generate initial input data using init method
         init_input = torch.empty((0, self.mission.param_dims))
         for i in range(self.num_init_design):
-            init_input = torch.cat((init_input, self.init_method.trajectory()))
+            trajectory = self.init_method.trajectory()
+            init_input = torch.cat((init_input, trajectory))
             self.init_method.upgrade()
 
         # Initial Input Scaling
         if self.input_scaling:
             init_input = normalize(init_input, self.mission.envelope)
+
 
         # Initial Data Probing
         init_output = self.probe(input_data = init_input, init = True)
@@ -195,7 +197,22 @@ class Navigator(ABC):
                 if init:
                     input_data = unnormalize(input_data, self.mission.envelope)
             
-            output = self.mission.funcs[f](input_data)
+
+            # output = self.mission.funcs[f](input_data)
+
+            for d in range(len(input_data)):
+                data = input_data[d].unsqueeze(0)
+                probed_value = self.mission.funcs[f](data)
+
+                if d == 0:
+                    output = probed_value
+                else:
+                    output = torch.cat((output, probed_value), dim = 0)
+
+            
+
+            
+
 
             # Ensure Maximization problem
             if self.mission.maneuvers[f] == 'descend':

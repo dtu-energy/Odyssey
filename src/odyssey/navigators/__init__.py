@@ -15,6 +15,7 @@ from .sampler_navigators.sobol_navigator import Sobol_Navigator
 from .dataloader.dataloader import DataLoader
 
 # Acquisition Functions
+# TODO : Add odyssey.acquisition and import functions from there instead of odyssey.navigators
 from botorch.acquisition import ExpectedImprovement, qExpectedImprovement, qNoisyExpectedImprovement, NoisyExpectedImprovement
 from botorch.acquisition import ProbabilityOfImprovement, qProbabilityOfImprovement, NoisyExpectedImprovement
 from botorch.acquisition import UpperConfidenceBound, qUpperConfidenceBound
