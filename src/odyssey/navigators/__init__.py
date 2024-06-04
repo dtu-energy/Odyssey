@@ -1,11 +1,13 @@
 from .base_navigator import Navigator
+
+# Single Objective Navigators
 from .singlegp_navigator import SingleGP_Navigator
 
-# Multi Objective Navigators
-from .moo.qnparego_navigator import qNParEGO_Navigator
-from .moo.gryffin_navigator import Gryffin_Navigator
-from .moo.falcon_navigator import Falcon_Navigator
-from .moo.dragonfly_navigator import Dragonfly_Navigator
+# # Multi Objective Navigators
+# from .moo.qnparego_navigator import qNParEGO_Navigator
+# from .moo.gryffin_navigator import Gryffin_Navigator
+# from .moo.falcon_navigator import Falcon_Navigator
+# from .moo.dragonfly_navigator import Dragonfly_Navigator
 
 # Sampler Navigators
 from .sampler_navigators.grid_navigator import Grid_Navigator
