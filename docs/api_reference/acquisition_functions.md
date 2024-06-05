@@ -18,4 +18,4 @@ Refer to [BoTorch ProbabilityOfImprovement](https://botorch.org/api/acquisition.
 Refer to [BoTorch LogProbabilityOfImprovement](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.LogProbabilityOfImprovement). 
 
 ## **UpperConfidenceBound**
-Refer to [BoTorch UpperConfidenceBound](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.UpperConfidenceBound). 
+Refer to [BoTorch UpperConfidenceBound](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.UpperConfidenceBound).
