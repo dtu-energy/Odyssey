@@ -56,6 +56,8 @@ class SingleGP_Navigator(Navigator):
         if 'best_f' in self.acq_function_params:
             self.acq_function_params['best_f'] = self.mission.train_Y.max().item()
 
+        self.acq_function_params['maximize'] = True
+
         self.acq_function = self.acq_function_type(
                             model=self.model,
                             **self.acq_function_params             
