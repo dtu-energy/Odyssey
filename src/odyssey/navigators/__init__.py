@@ -21,3 +21,4 @@ from .dataloader.dataloader import DataLoader
 from botorch.acquisition import ExpectedImprovement, qExpectedImprovement, qNoisyExpectedImprovement, NoisyExpectedImprovement
 from botorch.acquisition import ProbabilityOfImprovement, qProbabilityOfImprovement, NoisyExpectedImprovement
 from botorch.acquisition import UpperConfidenceBound, qUpperConfidenceBound
+from botorch.acquisition.analytic import LogExpectedImprovement, LogProbabilityOfImprovement
