@@ -9,13 +9,13 @@ Refer to [BoTorch ExpectedImprovement](https://botorch.org/api/acquisition.html#
 
 
 ## **LogExpectedImprovement**
-Refer to [BoTorch ExpectedImprovement](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.LogExpectedImprovement). 
+Refer to [BoTorch LogExpectedImprovement](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.LogExpectedImprovement). 
 
 ## **ProbabilityOfImprovement**
-Refer to [BoTorch ExpectedImprovement](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.ProbabilityOfImprovement). 
+Refer to [BoTorch ProbabilityOfImprovement](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.ProbabilityOfImprovement). 
 
 ## **LogProbabilityOfImprovement**
-Refer to [BoTorch ExpectedImprovement](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.LogProbabilityOfImprovement). 
+Refer to [BoTorch LogProbabilityOfImprovement](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.LogProbabilityOfImprovement). 
 
 ## **UpperConfidenceBound**
-Refer to [BoTorch ExpectedImprovement](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.UpperConfidenceBound). 
+Refer to [BoTorch UpperConfidenceBound](https://botorch.org/api/acquisition.html#botorch.acquisition.analytic.UpperConfidenceBound). 
