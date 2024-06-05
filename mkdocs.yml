@@ -61,6 +61,7 @@ nav:
     - Mission: api_reference/mission.md
     - Navigators: api_reference/navigators.md
     - Acquisition Functions: api_reference/acquisition_functions.md
+    - Objective: api_reference/objective.md
   - About: about.md
   - Contact: contact.md
 

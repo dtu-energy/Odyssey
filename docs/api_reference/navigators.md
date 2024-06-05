@@ -47,6 +47,15 @@
         members:
             - __init__
 
+## **Sampler Navigators**
+::: odyssey.navigators.sampler_navigators.Sobol_Navigator
+    handler: python
+    options:
+        members:
+            - __init__
+
+<!-- TODO Grid Navigator -->
+
 
 
                 
