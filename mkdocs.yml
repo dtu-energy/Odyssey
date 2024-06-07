@@ -97,7 +97,7 @@ plugins:
 markdown_extensions:
 - pymdownx.arithmatex
 - pymdownx.highlight:
-    linenums: true
+    #linenums: false
     line_spans: __span
     pygments_lang_class: true
 - pymdownx.inlinehilite

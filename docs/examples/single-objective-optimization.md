@@ -1,4 +1,4 @@
-In the following a Single-Input-Single-Output (SISO) function is optimized.
+In the following, a Single-Input-Single-Output (SISO) function is optimized.
 
 The function that we will be optimizing is:
 
@@ -8,7 +8,7 @@ $$ f(x) = -\left(\sin{\left(x\right)} + \sin{\left(\frac{10}{3} \cdot x\right)}\
 which is a maximization problem where the parameter $x$ has a range of 0 to 10, and the optimum point is at $x^* = 5.14574$ and $f(x^*) = 1.8996$.
 
 ### 1. Import the necessary packages
-```python
+```python linenums="1"
 import torch
 import matplotlib.pyplot as plt
 
@@ -21,7 +21,7 @@ from odyssey.navigators import UpperConfidenceBound # Acquisition Function
 
 ### 2. Define the function and the objective
 The function is defined, and a `noise_level` parameter is added to implement some measurement noise.
-```python
+```python linenums="1"
 def real_func(x: torch.Tensor, noise_level = 0):
     sub_result = [-(torch.sin(x_i) + torch.sin((10.0 / 3.0) * x_i)) + (-1 + torch.rand(1)[0] * 2) * noise_level for x_i in x]
     return torch.Tensor(sub_result)
@@ -31,20 +31,20 @@ def real_func(x: torch.Tensor, noise_level = 0):
 
 Now some ground truth data is created to see what the function looks like. This is done by creating 1000 points evenly distributed in the parameter space, without any noise.
 
-```python
+```python linenums="1"
 test_X = torch.linspace(0, 10, 1000)
 test_Y = real_func(test_X, noise_level = 0)
 ```
 
 For the purposes of the optimization, the `noise_level` parameter will be set to $0.2$, and the `real_func` function is wrapped by the `Objective` class to define the objective.
 
-```python
+```python linenums="1"
 noise_level = 0.2
 objective = Objective(real_func, noise_level = noise_level)
 ```
 Now, plot the real function, along with the noise band:
 
-```python
+```python linenums="1"
 plt.figure(figsize=(10, 6))
 
 plt.fill_between(test_X, test_Y - noise_level, test_Y + noise_level, color='red', alpha=0.3, label='Noise Band')
@@ -62,7 +62,7 @@ plt.show()
 
 In this case, we have a Mission with one input dimension (`param_dims`) and one output dimension (`output_dims`). The `param_space` for the single input variable is 0 to 10, and as this is a maximization function, the goal is to ascend.
 
-```python
+```python linenums="1"
 param_dims = 1
 output_dims = 1
 
@@ -79,7 +79,7 @@ mission = Mission(
 
 ### 5. Define the navigator
 We want to initialize the model with 4 initial points, defined by the `num_init_design` variable, and the `SingleGP_Navigator` well suited as the navigator, as this is a single objective problem. Additionally, the `UpperConfidenceBound` (UCB) acquisition function is used with the `beta` parameter set to $0.5$.
-```python
+```python linenums="1"
 num_init_design = 4
 
 navigator = SingleGP_Navigator(
@@ -95,7 +95,7 @@ navigator = SingleGP_Navigator(
 
 ### 6. Visualize the initial points
 The points investigated so far are available in the `mission` object:
-```python
+```python linenums="1"
 print(mission.train_X)
 print(mission.train_Y)
 ```
@@ -113,7 +113,7 @@ print(mission.train_Y)
 
 A plot is now created with the initial points:
 
-```python
+```python linenums="1"
 plt.figure(figsize=(10, 6))
 
 plt.fill_between(test_X, test_Y - noise_level, test_Y + noise_level, color='red', alpha=0.3, label='Noise Band')
@@ -134,7 +134,7 @@ plt.show()
 ### 7. Run the optimization loop
 The `num_iter` variable defines the number of iterations to run, and is set to $10$. Some additional packages are imported here to filter out any warnings that might arise during the loop. The intermediate trajectories and observations are printed while the loop runs.
 
-```python 
+```python linenums="1"
 num_iter = 10
 
 from warnings import catch_warnings
@@ -182,14 +182,14 @@ while len(mission.train_X) - num_init_design < num_iter:
 
 To find the uncertainty, the posterior mean and standard deviation need to be found. The can be calculated using the `model` attribute of the `navigator` object.
 
-```python
+```python linenums="1"
 model = navigator.model
 pred_mean = model.posterior(test_X).mean.detach().squeeze()
 pred_std = torch.sqrt(model.posterior(test_X).variance).detach().squeeze()
 ```
 
 Now a plot can be generated with the function, noise band, iterated points, posterior model and uncertainty:
-```python
+```python linenums="1"
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Real function and noise band
@@ -218,7 +218,7 @@ Notice how the posterior model has a better mean and lower uncertainty around th
 ### 9. Analyze the results
 The results can be analyzed by finding the iterated point with the highest output value:
 
-```python
+```python linenums="1"
 best_idx = mission.train_Y.argmax().item()
 best_input = mission.train_X[best_idx].item()
 best_output = mission.train_Y[best_idx].item()
