@@ -95,9 +95,18 @@ plugins:
           line_length: 1
 
 markdown_extensions:
+- pymdownx.arithmatex
+- pymdownx.highlight:
+    linenums: true
+    line_spans: __span
+    pygments_lang_class: true
+- pymdownx.inlinehilite
+- pymdownx.snippets
+- pymdownx.superfences
 - admonition
 - toc: 
     toc_depth: 3
-
+extra_javascript:
+- https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML
 extra:
   generator: false  
