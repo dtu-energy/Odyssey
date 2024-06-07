@@ -41,5 +41,7 @@ Key Features of Odyssey Bayesian Optimization:
 
 Odyssey is committed to making Bayesian optimization accessible and efficient for all. Get started with Odyssey today and unlock the full potential of your machine learning models and research projects!
 
+[Get Started Here!](/getting-started/installation/)
+
 
 
