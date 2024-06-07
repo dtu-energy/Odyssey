@@ -54,6 +54,7 @@ nav:
   - Home: index.md
   - Getting Started:
     - Installation: getting-started/installation.md
+    - Structure of Odyssey: getting-started/structure.md
   - Examples:
     - Single Objective Optimization: examples/single-objective-optimization.md
     - Multi Objective Optimization: examples/multi-objective-optimization.md

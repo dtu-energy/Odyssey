@@ -16,6 +16,7 @@ pages:
   stage: deploy
   image: python:latest
   script:
+    - pip install botorch==0.10.0
     - pip install mkdocs-material
     - pip install 'mkdocstrings[python]'
     - pip install mkdocs-gen-files
