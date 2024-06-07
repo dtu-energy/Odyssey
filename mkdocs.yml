@@ -94,6 +94,7 @@ plugins:
           line_length: 1
 
 markdown_extensions:
+- admonition
 - toc: 
     toc_depth: 3
 
