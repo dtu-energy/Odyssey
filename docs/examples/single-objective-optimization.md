@@ -23,8 +23,8 @@ from odyssey.navigators import UpperConfidenceBound # Acquisition Function
 The function is defined, and a `noise_level` parameter is added to implement some measurement noise.
 ```python linenums="1"
 def real_func(x: torch.Tensor, noise_level = 0):
-    sub_result = [-(torch.sin(x_i) + torch.sin((10.0 / 3.0) * x_i)) + (-1 + torch.rand(1)[0] * 2) * noise_level for x_i in x]
-    return torch.Tensor(sub_result)
+    noise = (-1 + torch.rand(x.size()) * 2) * noise_level
+    return -(torch.sin(x) + torch.sin((10.0 / 3.0) * x)) + noise
 ```
 
 ### 3. Visualize the function
