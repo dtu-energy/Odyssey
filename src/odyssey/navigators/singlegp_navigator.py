@@ -11,6 +11,8 @@ from odyssey.navigators.base_navigator import Navigator
 from botorch.models import SingleTaskGP
 from gpytorch.mlls import ExactMarginalLogLikelihood
 from botorch.fit import fit_gpytorch_mll
+from botorch.models.transforms import Standardize
+from botorch.models.transforms import Normalize
 
 # Acquisition Function Optimization
 from botorch.optim import optimize_acqf
@@ -39,7 +41,11 @@ class SingleGP_Navigator(Navigator):
 
 
     def _upgrade(self):
-        self.model = SingleTaskGP(self.mission.train_X, self.mission.train_Y)
+        # TODO: Connect input_transform and outcome_transform to input_scaling and data_standardization
+        self.model = SingleTaskGP(self.mission.train_X, self.mission.train_Y, 
+                                  #input_transform=Normalize(d=self.mission.param_dims),  
+                                  outcome_transform=Standardize(m=self.mission.output_dims)
+                                  )
         self.mll = ExactMarginalLogLikelihood(self.model.likelihood, self.model)
         _ = fit_gpytorch_mll(self.mll)
 
@@ -64,7 +70,7 @@ class SingleGP_Navigator(Navigator):
                         )
         
     def _trajectory(self):
-
+        # Remove traj bounds and keep envelope (to be tested)
         candidate, _ = optimize_acqf(
             acq_function = self.acq_function,
             bounds = self.traj_bounds,
