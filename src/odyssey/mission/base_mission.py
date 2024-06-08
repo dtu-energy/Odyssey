@@ -13,8 +13,20 @@ import datetime
 
 class Mission(ABC):
     """
-    Say something about the mission, boys
+    The Mission class is the central component of the Odyssey library, representing the optimization problem at hand.
+    It is initialized with several key parameters and maintains the training data, which are updated as the optimization process progresses.
+
+    Attributes:
+        funcs (list): List of functions to be optimized. Each function should take a tensor as input and return a tensor as output. The Objective class can be used to wrap functions.
+        maneuvers (list): List of goals for each function. Each goal can be either 'ascend' (maximize the function) or 'descend' (minimize the function).
+        envelope (Union[list, np.ndarray, torch.Tensor]): Defines the parameter space for the optimization problem.
+        param_dims (int): The number of input parameters.
+        output_dims (int): The number of output parameters.
+        name (str): The name of the mission.
+        logfile (str): The path to the logfile.
+        columns (list): The columns in the logfile.
     """
+    # TODO: Add train_X, train_Y, display_X, display_Y as attributes.
 
     def __init__(self, 
                  name: str,
@@ -22,6 +34,16 @@ class Mission(ABC):
                  maneuvers: list, 
                  envelope: Union[list, np.ndarray, torch.Tensor]
         ):  
+
+        """
+        Initializes the Mission class with the given parameters and sets up the logfile.
+
+        Args:s
+            name (str): The name of the mission.
+            funcs (list): List of functions to be optimized.
+            maneuvers (list): List of goals for each function.
+            envelope (Union[list, np.ndarray, torch.Tensor]): Defines the parameter space for the optimization problem.
+        """
 
         # TODO If mission with same name already exists, do something
 
@@ -57,9 +79,28 @@ class Mission(ABC):
         log_df.to_csv(self.logfile, index=False)
 
     def read_logfile(self) -> pd.DataFrame:
+        
+        """
+        Reads the logfile and returns it as a pandas DataFrame.
+
+        Returns:
+            pd.DataFrame: The logfile as a pandas DataFrame.
+        """
+
         return pd.read_csv(self.logfile)
 
     def write_to_logfile(self, data: dict):
+
+        """
+        Writes the given data to the logfile. The data dictionary should match the columns of the logfile.
+        A creation timestamp is automatically added to the data before writing.
+
+        Args:
+            data (dict): The data to be written to the logfile. Keys should match the logfile columns.
+
+        Raises:
+            AssertionError: If the keys of the data dictionary do not match the logfile columns.
+        """
 
         data['creation_timestamp'] = datetime.datetime.now().strftime("%d-%m-%y %H:%M:%S")
 

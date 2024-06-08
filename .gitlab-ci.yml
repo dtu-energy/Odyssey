@@ -27,7 +27,7 @@ pages:
       - public
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      changes:
-        - .gitlab-ci.yml
-        - docs/**/*
-        - mkdocs.yml
+      # changes:
+      #   - .gitlab-ci.yml
+      #   - docs/**/*
+      #   - mkdocs.yml

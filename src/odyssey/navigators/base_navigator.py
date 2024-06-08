@@ -117,9 +117,10 @@ class Navigator(ABC):
             display_output = self.mission.train_Y.clone()
 
             
-        if self.display_always_max:
+        if self.display_always_max == False:
             # Minimization (descend) objectives were inverted during optimization
-            # Values of these objectives are now inverted back for displaying
+            # Values of these objectives are now inverted back for displaying if display_always_max is False
+            # This way, the user can see the actual values of the objectives and not of the forced maximization
             descend_indices = [idx for idx, value in enumerate(self.mission.maneuvers) if value == 'descend']
             display_output[:, descend_indices] *= -1
         else:

@@ -60,9 +60,9 @@ nav:
     - Multi Objective Optimization: examples/multi-objective-optimization.md
   - Reference:
     - Mission: api_reference/mission.md
+    - Objective: api_reference/objective.md
     - Navigators: api_reference/navigators.md
     - Acquisition Functions: api_reference/acquisition_functions.md
-    - Objective: api_reference/objective.md
   - About: about.md
   - Contact: contact.md
 

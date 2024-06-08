@@ -1,3 +1,5 @@
+<!-- TODO: Fix Botorch examples not formatted properly. -->
+
 On this page, some information and references to the various acquisition functions are provided. 
 
 !!! info "Info"

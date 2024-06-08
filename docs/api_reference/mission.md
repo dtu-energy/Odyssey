@@ -5,3 +5,5 @@
     options:
         members:
             - __init__
+            - read_logfile
+            - write_to_logfile

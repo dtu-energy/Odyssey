@@ -1,9 +1,11 @@
 from .base_navigator import Navigator
 
 # Single Objective Navigators
+# TODO: Add odyssey.single_objective and import functions from there
 from .singlegp_navigator import SingleGP_Navigator
 
 # # Multi Objective Navigators
+# TODO: Rename to multi_objective instead of moo
 # from .moo.qnparego_navigator import qNParEGO_Navigator
 # from .moo.gryffin_navigator import Gryffin_Navigator
 # from .moo.falcon_navigator import Falcon_Navigator

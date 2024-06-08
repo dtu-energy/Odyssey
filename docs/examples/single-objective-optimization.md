@@ -24,7 +24,7 @@ The function is defined, and a `noise_level` parameter is added to implement som
 ```python linenums="1"
 def real_func(x: torch.Tensor, noise_level = 0):
     noise = (-1 + torch.rand(x.size()) * 2) * noise_level
-    return -(torch.sin(x) + torch.sin((10.0 / 3.0) * x)) + noise
+    return -(torch.sin(x) + torch.sin((10.0 / 3.0) * x)) + noisew
 ```
 
 ### 3. Visualize the function
@@ -60,12 +60,9 @@ plt.show()
 
 ### 4. Define the Mission
 
-In this case, we have a Mission with one input dimension (`param_dims`) and one output dimension (`output_dims`). The `param_space` for the single input variable is 0 to 10, and as this is a maximization function, the goal is to ascend.
+In this case, we have a Mission with one input dimension and one output dimension. The `param_space` for the single input variable is 0 to 10, and as this is a maximization function, the goal is to ascend.
 
 ```python linenums="1"
-param_dims = 1
-output_dims = 1
-
 param_space = [(0.0, 10.0)]
 goals = ['ascend']
 
@@ -96,8 +93,8 @@ navigator = SingleGP_Navigator(
 ### 6. Visualize the initial points
 The points investigated so far are available in the `mission` object:
 ```python linenums="1"
-print(mission.train_X)
-print(mission.train_Y)
+print(mission.display_X)
+print(mission.display_Y)
 ```
 !!! note "Output"
     ```python
@@ -118,7 +115,7 @@ plt.figure(figsize=(10, 6))
 
 plt.fill_between(test_X, test_Y - noise_level, test_Y + noise_level, color='red', alpha=0.3, label='Noise Band')
 plt.plot(test_X, test_Y, color='red', label='Real Function')
-plt.scatter(mission.train_X, mission.train_Y, color = 'k', marker = '.', label='Noisy Points')
+plt.scatter(mission.display_X, mission.display_Y, color = 'k', marker = '.', label='Noisy Points')
 
 plt.xlabel('Input Parameter')
 plt.ylabel('Output Metric')
@@ -140,14 +137,14 @@ num_iter = 10
 from warnings import catch_warnings
 from warnings import simplefilter
 
-while len(mission.train_X) - num_init_design < num_iter:
+while len(mission.display_X) - num_init_design < num_iter:
 
     with catch_warnings() as w:
         simplefilter('ignore')
         
         trajectory = navigator.trajectory()
         observation = navigator.probe(trajectory, init = False)
-        print(len(mission.train_X) - num_init_design, trajectory, observation)
+        print(len(mission.display_X) - num_init_design, trajectory, observation)
         navigator.relay(trajectory, observation)
         navigator.upgrade()
 ```
@@ -180,7 +177,7 @@ while len(mission.train_X) - num_init_design < num_iter:
 
 ### 8. Visualize the iterated points and uncertainty
 
-To find the uncertainty, the posterior mean and standard deviation need to be found. The can be calculated using the `model` attribute of the `navigator` object.
+To find the uncertainty, the posterior mean and standard deviation need to be found. These can be calculated using the `model` attribute of the `navigator` object. The posterior model is always set up for a maximization, so if you have a minimization problem, simply add a minus (-) before the `pred_mean`.
 
 ```python linenums="1"
 model = navigator.model
@@ -197,7 +194,7 @@ ax.fill_between(test_X, test_Y - noise_level, test_Y + noise_level, color='red',
 ax.plot(test_X, test_Y, color='red', label='Real Function')
 
 # Measurements
-ax.scatter(mission.train_X, mission.train_Y, color = 'k', marker = '.', label='Measurements')
+ax.scatter(mission.display_X, mission.display_Y, color = 'k', marker = '.', label='Measurements')
 
 # Posterior model and uncertainty
 ax.plot(test_X.squeeze(), pred_mean, color = 'g', linestyle = 'dashed', label = 'Posterior Model')
@@ -216,12 +213,12 @@ plt.show()
 Notice how the posterior model has a better mean and lower uncertainty around the observed points!
 
 ### 9. Analyze the results
-The results can be analyzed by finding the iterated point with the highest output value:
+The results can be analyzed by finding the iterated point with the highest output value, as this is a maximization problem:
 
 ```python linenums="1"
-best_idx = mission.train_Y.argmax().item()
-best_input = mission.train_X[best_idx].item()
-best_output = mission.train_Y[best_idx].item()
+best_idx = mission.display_Y.argmax().item()
+best_input = mission.display_X[best_idx].item()
+best_output = mission.display_Y[best_idx].item()
 
 print(f'Best Input: {best_input}')
 print(f'Best Output: {best_output}')
