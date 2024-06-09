@@ -13,6 +13,13 @@ from odyssey.mission import Mission
 from odyssey.utils.utils import normalize, unnormalize, standardize, unstandardize
 
 class Navigator(ABC):
+
+    """
+    Base Navigator class for the Odyssey API. This class is an abstract base class (ABC) that defines the basic structure 
+    for all Navigator classes in the Odyssey API. It provides methods for generating initial data, display data, log data, 
+    and for updating the model and training data.
+    """
+
     requires_init_data = True
 
     def __init__(self,
@@ -23,6 +30,18 @@ class Navigator(ABC):
                  data_standardization: bool = False,
                  display_always_max: bool = False,
         ):
+
+        """
+        Initializes a Navigator object.
+
+        Args:
+            mission (Mission): The mission object associated with the Navigator.
+            num_init_design (int, optional): The number of initial designs. Defaults to None.
+            init_method (Navigator, optional): The method used for initialization. See Sampler Navigators for more information. Defaults to None.
+            input_scaling (bool, optional): Specifies if input parameters are normalized to the unit cube for model training. Defaults to False.
+            data_standardization (bool, optional): Specifies if output parameters are standadized (zero mean and unit variance) for model training. Defaults to False.
+            display_always_max (bool, optional): If set to true, minimization problems are logged and displayed as maximization problems. Useful for users who prefer viewing all problems as maximization tasks. Defaults to False.
+        """
 
         self.mission = mission
         self.num_init_design = num_init_design if num_init_design is not None else 0
@@ -57,7 +76,6 @@ class Navigator(ABC):
             self.traj_bounds = self.mission.envelope.T
 
         
-
         # TODO Route following section of init through trajectory, relay and upgrade methods
         if self.requires_init_data:
             
@@ -85,6 +103,10 @@ class Navigator(ABC):
     
     def generate_init_data(self):
 
+        """
+        Generates initial input data using the init method and probes the functions.
+        """
+
         # Generate initial input data using init method
         init_input = torch.empty((0, self.mission.param_dims))
         for i in range(self.num_init_design):
@@ -103,6 +125,11 @@ class Navigator(ABC):
         return init_input, init_output
     
     def generate_display_data(self):
+
+        """
+        Converts the training data to display data.
+        """
+
         if self.input_scaling:
             display_input = unnormalize(self.mission.train_X.clone(), self.mission.envelope)
         else:
@@ -128,7 +155,15 @@ class Navigator(ABC):
 
         return display_input, display_output
     
-    def generate_log_data(self, init: bool = False):
+    def generate_log_data(self, init: bool = False) -> dict:
+
+        """
+        Generates log data for the mission.
+
+        Args:
+            init (bool, optional): Specifies if this is the initial log data generation. Defaults to False.
+        """
+        
         if init:
             display_X_subset = self.mission.display_X
             display_Y_subset = self.mission.display_Y
@@ -148,32 +183,48 @@ class Navigator(ABC):
 
     @abstractmethod
     def _upgrade(self, *args, **kwargs):
-        """Update model with specific requirements"""
+
+        """
+        Abstract method to update the model with specific requirements.
+        """
+
         pass
 
     def upgrade(self, *args, **kwargs):
+        
+        """
+        Updates the model by calling the model-specific abstract `_upgrade` method.
+        """
+
         self._upgrade()
     
     @abstractmethod
     def _trajectory(self, *args, **kwargs):
+        
         """
-        Translate model-specific parameter recommendation to compatible format (torch.tensor)
+        Abstract method to translate model-specific parameter recommendation to a compatible format (torch.tensor).
         """
+
         pass
 
     def trajectory(self, *args, **kwargs):
+
+        """
+        Translates model-specific parameter recommendation to a compatible format (torch.tensor) by calling the abstract `_trajectory` method.
+        """
+
         return self._trajectory(*args, **kwargs)
 
     def relay(self, trajectory, observation, *args, **kwargs):
 
         """
-        Update the training data and display data with the new trajectory and observation. 
-        Retain standardization and scaling for training data, but revert to original scale for display data.
-        Log display data to mission logfile
+        Updates the training data and display data with the new trajectory and observation. 
+        Retains standardization and scaling for training data, but reverts to original scale for display data.
+        Logs display data to mission logfile.
 
         Args:
-            trajectory (torch.Tensor): The new trajectory.
-            observation (torch.Tensor): The observation of the new trajectory.
+            trajectory: The new trajectory.
+            observation: The new observation.
         """
 
         # Relay train data
@@ -189,7 +240,18 @@ class Navigator(ABC):
         self.mission.write_to_logfile(data = data_dict)
         
     
-    def probe(self, input_data: torch.tensor, init: bool, *args, **kwargs):
+    def probe(self, input_data: torch.tensor, init: bool, *args, **kwargs) -> torch.Tensor:
+
+        """
+        Probes the functions with the input data and returns the output.
+
+        Args:
+            input_data (torch.tensor): The input data to probe the functions with.
+            init (bool): A flag indicating whether this is the initial probing.
+
+        Returns:
+            torch.Tensor: The output from all functions.
+        """
 
         for f in range(len(self.mission.funcs)):
             
@@ -209,11 +271,6 @@ class Navigator(ABC):
                     output = probed_value
                 else:
                     output = torch.cat((output, probed_value), dim = 0)
-
-            
-
-            
-
 
             # Ensure Maximization problem
             if self.mission.maneuvers[f] == 'descend':

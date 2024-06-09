@@ -54,6 +54,11 @@
         members:
             - __init__
 
+::: odyssey.navigators.sampler_navigators.Grid_Navigator
+    handler: python
+    options:    
+        members:
+            - __init__
 
 
 

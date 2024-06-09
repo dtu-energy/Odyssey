@@ -2,6 +2,20 @@ from odyssey.navigators import Navigator
 import torch
 
 class Grid_Navigator(Navigator):
+
+    """
+    Grid_Navigator is a subclass of the Navigator class that navigates the search space using a grid-based approach. 
+    It does not require initial data.
+
+    Attributes:
+        requires_init_data (bool): A flag, set to False, indicating that this navigator does not require initial data.
+        iter_value (int): The current iteration value.
+        x (torch.Tensor): The tensor representing the grid.
+
+    !!! warning
+        As of yet, the Grid_Navigator does not function as a standalone navigator. It is only used for initial sampling.
+    """
+
     requires_init_data = False
 
     def __init__(self,
@@ -9,6 +23,15 @@ class Grid_Navigator(Navigator):
                  *args,
                  **kwargs):
         
+        """
+        Initializes a Grid_Navigator object. 
+
+        Args:
+            subdivisions (int): The number of equidistant subdivisions of the parameter space for the grid.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
+
         super().__init__(*args, **kwargs)
         
 
@@ -20,9 +43,22 @@ class Grid_Navigator(Navigator):
         # TODO Add some kind of stop so that we don't go over subdivisions
 
     def _upgrade(self):
+
+        """
+        Simply increments the iteration value.
+        """
+
         self.iter_value += 1
 
-    def _trajectory(self):
+    def _trajectory(self) -> torch.Tensor:
+
+        """
+        Selects the next candidate from the pre-generated grid.
+
+        Returns:
+            torch.Tensor: The next candidate from the grid.
+        """
+
         candidate = self.x[[self.iter_value]]
 
         return candidate

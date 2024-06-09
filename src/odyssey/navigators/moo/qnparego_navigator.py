@@ -22,54 +22,11 @@ from botorch.acquisition.objective import GenericMCObjective
 from botorch.utils.multi_objective.scalarization import get_chebyshev_scalarization
 
 class qNParEGO_Navigator(Navigator):
-    """
-    Navigator class implementing the qNParEGO algorithm.
-
-    Args:
-        acq_function_params (dict): Parameters for the acquisition function.
-        *args: Variable length argument list.
-        **kwargs: Arbitrary keyword arguments.
-
-    Attributes:
-        acq_function_type (type): Type of the acquisition function.
-        acq_function_params (dict): Parameters for the acquisition function.
-        acq_function (list): List of acquisition functions.
-        mll (SumMarginalLogLikelihood): Marginal log-likelihood for model fitting.
-        model (ModelListGP): List of Gaussian process models.
-
-    Returns:
-        None
-
-    Raises:
-        AssertionError: If the number of output functions is less than 2.
-
-    Examples:
-        >>> navigator = qNParEGO_Navigator(
-                            mission = mission,
-                            num_init_design = num_init_design,
-                            input_scaling = False,
-                            data_standardization = True,
-                            init_method = 'grid',
-                            acq_function_params = {'prune_baseline': True}
-                        )
-        
-        >>> trajectory = navigator.trajectory()
-        >>> observation = navigator.probe(trajectory, init = False)
-        >>> navigator.relay(trajectory, observation)
-        >>> navigator.upgrade()
-    """
 
     requires_init_data = True
 
     def __init__(self, acq_function_params: dict, *args, **kwargs):
-        """
-        Initialize the qNParEGO_Navigator.
-
-        Args:
-            acq_function_params (dict): Parameters for the acquisition function.
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-        """
+        
         super().__init__(*args, **kwargs)
 
         assert len(self.mission.funcs) > 1, "qNParEGO_Navigator requires multiple output functions. For single output functions, use SingleGPNavigator"
@@ -80,9 +37,7 @@ class qNParEGO_Navigator(Navigator):
         self.upgrade()
 
     def _upgrade(self):
-        """
-        Upgrade the model and acquisition function.
-        """
+  
         self.mll, self.model = self.initialize_model()
         fit_gpytorch_mll(self.mll)
 
@@ -111,13 +66,7 @@ class qNParEGO_Navigator(Navigator):
         self.acq_function = acq_fun_list
 
     def initialize_model(self):
-        """
-        Initialize the Gaussian process models.
 
-        Returns:
-            mll (SumMarginalLogLikelihood): Marginal log-likelihood for model fitting.
-            model (ModelListGP): List of Gaussian process models.
-        """
         models = []
         for i in range(self.mission.train_Y.dim()):
             train_objective = self.mission.train_Y[:, i]
@@ -131,12 +80,7 @@ class qNParEGO_Navigator(Navigator):
         return mll, model
 
     def _trajectory(self):
-        """
-        Optimize the acquisition function to find the next trajectory.
 
-        Returns:
-            candidate (torch.Tensor): The next trajectory.
-        """
         candidate, _ = optimize_acqf_list(
             acq_function_list=self.acq_function,
             bounds=self.traj_bounds,
