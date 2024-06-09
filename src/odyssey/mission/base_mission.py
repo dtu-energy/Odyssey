@@ -120,6 +120,8 @@ class Mission(ABC):
 
         # Write to logfile
         log_df.to_csv(self.logfile, index=False)
+
+        # TODO: Maybe take this out and change to just a number
         print(f"Succesfully appended {data} to {self.logfile}")
         
 

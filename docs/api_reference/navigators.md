@@ -60,6 +60,13 @@
         members:
             - __init__
 
+## **DataLoader**
+::: odyssey.navigators.dataloader.DataLoader
+    handler: python
+    options:
+        members:
+            - __init__
+
 
 
                 

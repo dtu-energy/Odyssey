@@ -109,10 +109,28 @@ class Navigator(ABC):
 
         # Generate initial input data using init method
         init_input = torch.empty((0, self.mission.param_dims))
+
+        # Make sure that the user is not requesting more datapoints than are available, and is advised if not all datapoints are requested
+        if hasattr(self.init_method, 'data_df'):
+
+            assert self.num_init_design <= len(self.init_method.data_df), f'Number of initial design points ({self.num_init_design}) is greater than the number of available points ({len(self.init_method.data_df)}).'
+
+            if self.num_init_design < len(self.init_method.data_df):
+                print(f'You have requested {self.num_init_design} datapoints and are not requesting all possible datapoints in the datafiles ({len(self.init_method.data_df)})')
+            elif self.num_init_design > len(self.init_method.data_df):
+                print(f'You have requested for more datapoints than available ({len(self.init_method.data_df)}). All have been loaded.')
+            else:
+                pass
+
+
+
         for i in range(self.num_init_design):
-            trajectory = self.init_method.trajectory()
-            init_input = torch.cat((init_input, trajectory))
-            self.init_method.upgrade()
+            try:
+                trajectory = self.init_method.trajectory()
+                init_input = torch.cat((init_input, trajectory))
+                self.init_method.upgrade()
+            except IndexError:
+                pass
 
         # Initial Input Scaling
         if self.input_scaling:

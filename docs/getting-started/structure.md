@@ -62,6 +62,8 @@ Sampler Navigators can be used as initialization methods for other navigators. F
 
 However, Sampler Navigators can also be used as standalone navigators. In this case they do not start with any inital points, but they generate a sequence of points in the parameter space, and the function is probed at each point. This can be useful for problems where the objective function is cheap to evaluate, or when a broad exploration of the parameter space is desired.
 
+### DataLoader
+The DataLoader, a unique variant of the Sampler Navigator, is designed to initialize your mission with data from its previous runs. It requires data files in a specific format. Provided that the number of parameters and objectives align, the DataLoader seamlessly integrates the data into your mission. 
 
 ## Acquisition Functions
 
