@@ -182,21 +182,19 @@ class Navigator(ABC):
         self._upgrade()
     
     @abstractmethod
-    def _trajectory(self, *args, **kwargs):
-        
+    def _get_next_trial(self, *args, **kwargs):
         """
         Abstract method to translate model-specific parameter recommendation to a compatible format (torch.tensor).
         """
 
         pass
-
-    def trajectory(self, *args, **kwargs):
-
+    
+    def get_next_trial(self, *args, **kwargs):
         """
         Translates model-specific parameter recommendation to a compatible format (torch.tensor) by calling the abstract `_trajectory` method.
         """
 
-        return self._trajectory(*args, **kwargs)
+        return self._get_next_trial(*args, **kwargs)
 
     def relay(self, trajectory, observation, *args, **kwargs):
 
