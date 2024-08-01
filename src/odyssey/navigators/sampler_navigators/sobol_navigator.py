@@ -17,7 +17,7 @@ class Sobol_Navigator(Navigator):
     requires_init_data = False
 
     def __init__(self,
-                 nsamples,
+                 nsamples: int,
                  seed=None,
                  *args,
                  **kwargs):
@@ -36,7 +36,7 @@ class Sobol_Navigator(Navigator):
         self.seed = seed
 
         self.sequence = draw_sobol_samples(
-            self.traj_bounds,
+            self.traj_bounds, # parameter bounds are lists for min in each dimension and max in each dimension
             n = 1,
             q = nsamples,
             seed = self.seed,
@@ -50,7 +50,7 @@ class Sobol_Navigator(Navigator):
 
         self.current_sample += 1
 
-    def _trajectory(self) -> torch.Tensor:
+    def _get_next_trial(self) -> torch.Tensor:
 
         """
         Draws a sample from the Sobol sequence.
