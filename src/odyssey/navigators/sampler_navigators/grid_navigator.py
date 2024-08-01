@@ -33,14 +33,14 @@ class Grid_Navigator(Navigator):
         """
 
         super().__init__(*args, **kwargs)
-        
 
         self.iter_value = 0
         
-        tensor_dims = [torch.randperm(subdivisions) * (upper - lower) / (subdivisions - 1) + lower for lower, upper in self.traj_bounds.T]
+        tensor_dims = [
+            (torch.randperm(subdivisions) * (upper - lower)) / ((subdivisions - 1) + lower) 
+            for lower, upper in self.mission.envelope
+        ]
         self.x = torch.stack(tensor_dims, dim=1)
-
-        # TODO Add some kind of stop so that we don't go over subdivisions
 
     def _upgrade(self):
 
@@ -50,7 +50,7 @@ class Grid_Navigator(Navigator):
 
         self.iter_value += 1
 
-    def _trajectory(self) -> torch.Tensor:
+    def _get_next_trial(self) -> torch.Tensor:
 
         """
         Selects the next candidate from the pre-generated grid.
@@ -59,6 +59,9 @@ class Grid_Navigator(Navigator):
             torch.Tensor: The next candidate from the grid.
         """
 
-        candidate = self.x[[self.iter_value]]
+        try:
+            candidate = self.x[[self.iter_value]]
+        except IndexError as e:
+            raise IndexError("grid sequence exhausted")
 
         return candidate
