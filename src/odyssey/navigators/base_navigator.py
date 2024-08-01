@@ -22,13 +22,15 @@ class Navigator(ABC):
 
     requires_init_data = True
 
-    def __init__(self,
-                 mission: Mission, 
-                 num_init_design: int = None,
-                 init_method:  Optional[Union['Navigator']] = None,
-                 input_scaling: bool = False,
-                 data_standardization: bool = False,
-                 display_always_max: bool = False,
+    def __init__(
+            self,
+            mission: Mission,
+            n_init: int = 5,
+            init_method: str = "sobol",
+            input_scaling: bool = False,
+            data_standardization: bool = False,
+            display_always_max: bool = False,
+            init_kwargs: dict = {},
         ):
 
         """
@@ -36,7 +38,7 @@ class Navigator(ABC):
 
         Args:
             mission (Mission): The mission object associated with the Navigator.
-            num_init_design (int, optional): The number of initial designs. Defaults to None.
+            n_init (int, optional): The number of initial datapoints. Defaults to None.
             init_method (Navigator, optional): The method used for initialization. See Sampler Navigators for more information. Defaults to None.
             input_scaling (bool, optional): Specifies if input parameters are normalized to the unit cube for model training. Defaults to False.
             data_standardization (bool, optional): Specifies if output parameters are standadized (zero mean and unit variance) for model training. Defaults to False.
@@ -44,25 +46,12 @@ class Navigator(ABC):
         """
 
         self.mission = mission
-        self.num_init_design = num_init_design if num_init_design is not None else 0
-        self.init_method = init_method
-        
     
         # Check if Navigator requires init data
         ## Sampler-Type Navigators do not require init data
         ## Acquisition-Type Navigators require init data
 
-        if self.requires_init_data:
-
-            if self.num_init_design == 0 or init_method is None:
-                raise ValueError("This navigator requires initial data, but num_init_design or init_method was not provided.")
-            
-            if self.num_init_design < 0:
-                raise ValueError("num_init_design must be a positive integer.")
-            
-        else:
-            if self.num_init_design != 0 or init_method is not None:
-                raise ValueError("This navigator does not require initial data, but num_init_design or init_method was provided.")
+        
 
         # FIXME Input scaling not working correctly.
 
@@ -71,76 +60,54 @@ class Navigator(ABC):
         self.display_always_max = display_always_max
 
         if self.input_scaling:
-            self.traj_bounds = torch.stack((torch.zeros(self.mission.param_dims), torch.ones(self.mission.param_dims))) # Unit Cube bounds
+            self.traj_bounds = torch.stack(
+                (torch.zeros(self.mission.param_dims), torch.ones(self.mission.param_dims))
+            ) # Unit Cube bounds
         else:
             self.traj_bounds = self.mission.envelope.T
 
-        
-        # TODO Route following section of init through trajectory, relay and upgrade methods
         if self.requires_init_data:
-            
-            self.init_method.mission = self.mission
-            
-            # Generate init train_X using given init method and probe the functions
-            self.mission.train_X, self.mission.train_Y = self.generate_init_data()
+            assert n_init > 0, "This navigator requires initial data, but n_init is set to 0"
+            self.n_init = n_init
+            self.init_method = self.get_init_navigator(
+                init_method=init_method,
+                n_init=n_init,
+                **init_kwargs
+            )
+        
 
-            # Convert init train data to display data
-            self.mission.display_X, self.mission.display_Y = self.generate_display_data()
+        self.mission.train_X = torch.empty((0, mission.param_dims))
+        self.mission.train_Y = torch.empty((0, mission.output_dims))
 
-            # Log init display data
-            data_dict = self.generate_log_data(init = True) 
-            self.mission.write_to_logfile(data = data_dict)
-
-        else:
-
-            self.mission.train_X = torch.empty((0, mission.param_dims))
-            self.mission.train_Y = torch.empty((0, mission.output_dims))
-
-            self.mission.display_X = self.mission.train_X.clone()
-            self.mission.display_Y = self.mission.train_Y.clone()
+        self.mission.display_X = self.mission.train_X.clone()
+        self.mission.display_Y = self.mission.train_Y.clone()
 
 
-    
-    def generate_init_data(self):
-
+    def get_init_navigator(self, init_method, n_init, **kwargs):
         """
-        Generates initial input data using the init method and probes the functions.
+        Set up the initial navigator for generating datapoints before optimising
+
+        Args:
+            init_method (str): the name of the initial navigator
         """
+        from odyssey.navigators.sampler_navigators import (
+            Sobol_Navigator,
+            Grid_Navigator,
+            Random_Navigator,
+        )
 
-        # Generate initial input data using init method
-        init_input = torch.empty((0, self.mission.param_dims))
+        initial_navigators = {
+            "sobol": Sobol_Navigator,
+            "grid": Grid_Navigator,
+            "random": Random_Navigator,
+        }
 
-        # Make sure that the user is not requesting more datapoints than are available, and is advised if not all datapoints are requested
-        if hasattr(self.init_method, 'data_df'):
+        return initial_navigators[init_method](
+            n_init,
+            mission=self.mission,
+            **kwargs,
+        )
 
-            assert self.num_init_design <= len(self.init_method.data_df), f'Number of initial design points ({self.num_init_design}) is greater than the number of available points ({len(self.init_method.data_df)}).'
-
-            if self.num_init_design < len(self.init_method.data_df):
-                print(f'You have requested {self.num_init_design} datapoints and are not requesting all possible datapoints in the datafiles ({len(self.init_method.data_df)})')
-            elif self.num_init_design > len(self.init_method.data_df):
-                print(f'You have requested for more datapoints than available ({len(self.init_method.data_df)}). All have been loaded.')
-            else:
-                pass
-
-
-
-        for i in range(self.num_init_design):
-            try:
-                trajectory = self.init_method.trajectory()
-                init_input = torch.cat((init_input, trajectory))
-                self.init_method.upgrade()
-            except IndexError:
-                pass
-
-        # Initial Input Scaling
-        if self.input_scaling:
-            init_input = normalize(init_input, self.mission.envelope)
-
-
-        # Initial Data Probing
-        init_output = self.probe(input_data = init_input, init = True)
-
-        return init_input, init_output
     
     def generate_display_data(self):
 
@@ -168,8 +135,6 @@ class Navigator(ABC):
             # This way, the user can see the actual values of the objectives and not of the forced maximization
             descend_indices = [idx for idx, value in enumerate(self.mission.maneuvers) if value == 'descend']
             display_output[:, descend_indices] *= -1
-        else:
-            pass
 
         return display_input, display_output
     
@@ -293,8 +258,6 @@ class Navigator(ABC):
             # Ensure Maximization problem
             if self.mission.maneuvers[f] == 'descend':
                 output = -output
-            else:
-                pass
                 
             # Ensure > 1D output
             if output.dim() < 2:
