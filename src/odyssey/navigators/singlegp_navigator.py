@@ -130,6 +130,25 @@ class SingleGP_Navigator(Navigator):
             model=self.model,
             **params
         )
+    
+    def _get_next_trial(self, *args, **kwargs) -> torch.Tensor:
+        
+        if not hasattr(self.mission, 'train_X') or len(self.mission.train_X) < self.n_init:
+            LOG.debug("Generating initial samples")
+            candidate = self.init_method.get_next_trial()
+            self.init_method.upgrade()
+        else:
+            candidate, _ = optimize_acqf(
+                acq_function = self.acq_function,
+                bounds = self.traj_bounds,
+                q = 1,
+                num_restarts = 200,
+                raw_samples = 512
+            )
+
+        # Convert input data if scaling enabled
+        if self.input_scaling:
+            candidate = unnormalize(candidate, self.mission.envelope)
 
         return candidate
 
