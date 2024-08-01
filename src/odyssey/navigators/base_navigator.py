@@ -196,7 +196,7 @@ class Navigator(ABC):
 
         return self._get_next_trial(*args, **kwargs)
 
-    def relay(self, trajectory, observation, *args, **kwargs):
+    def relay(self, inputs, observation, *args, **kwargs):
 
         """
         Updates the training data and display data with the new trajectory and observation. 
@@ -208,8 +208,21 @@ class Navigator(ABC):
             observation: The new observation.
         """
 
+        # Calculate initial data mean and std
+        if kwargs.get("init", False):
+            self.init_train_Y_mean = output_all.mean(dim=0)
+            self.init_train_Y_std = output_all.std(dim=0)
+
+        # Perform Data Standardization based on initial data mean and std
+        if self.data_standardization:
+            output_all = standardize(
+                output_all, 
+                mean = self.init_train_Y_mean, 
+                std = self.init_train_Y_std
+            )
+
         # Relay train data
-        self.mission.train_X = torch.cat((self.mission.train_X, trajectory))
+        self.mission.train_X = torch.cat((self.mission.train_X, inputs))
         self.mission.train_Y = torch.cat((self.mission.train_Y, observation))
 
         # Relay display data 
@@ -218,7 +231,8 @@ class Navigator(ABC):
         # Log data
         ## Case where only one trajectory point and one observation point is observed (q=1)
         data_dict = self.generate_log_data(init = False)
-        self.mission.write_to_logfile(data = data_dict)
+        if self.mission.log_data:
+            self.mission.write_to_logfile(data = data_dict)
         
     
     def probe(self, input_data: torch.tensor, init: bool, *args, **kwargs) -> torch.Tensor:
@@ -237,9 +251,9 @@ class Navigator(ABC):
         for f in range(len(self.mission.funcs)):
             
             # Convert input data if scaling enabled
-            if self.input_scaling:
-                if init:
-                    input_data = unnormalize(input_data, self.mission.envelope)
+            # if self.input_scaling:
+            #     if init:
+            #         input_data = unnormalize(input_data, self.mission.envelope)
             
 
             # output = self.mission.funcs[f](input_data)
@@ -274,10 +288,11 @@ class Navigator(ABC):
 
         # Perform Data Standardization based on initial data mean and std
         if self.data_standardization:
-            output_all = standardize(output_all, 
-                                    mean = self.init_train_Y_mean, 
-                                    std = self.init_train_Y_std
-                                    )
+            output_all = standardize(
+                output_all, 
+                mean = self.init_train_Y_mean, 
+                std = self.init_train_Y_std
+            )
                 
             
         
