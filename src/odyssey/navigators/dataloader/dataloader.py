@@ -2,6 +2,9 @@ from odyssey.navigators import Navigator
 import torch
 import pandas as pd
 
+import logging
+LOG = logging.getLogger(__name__)
+
 class DataLoader(Navigator):
 
     """DataLoader is a subclass of the Navigator class that loads data from log files as initialization. It does not require initial data.
@@ -62,7 +65,7 @@ class DataLoader(Navigator):
             datafile_df = pd.read_csv(datafile)
     
             if not set(datafile_df.columns) == set(self.mission_columns + ['creation_timestamp']):
-                print(f'Columns in datafile {datafile} do not match mission data columns. Skipping this file.')
+                LOG.warning(f'Columns in datafile {datafile} do not match mission data columns. Skipping this file.')
             else:
                 if len(datafile_df) == 0: # If no data in the datafile
                     pass
