@@ -36,7 +36,7 @@ class Sobol_Navigator(Navigator):
         self.seed = seed
 
         self.sequence = draw_sobol_samples(
-            self.traj_bounds, # parameter bounds are lists for min in each dimension and max in each dimension
+            self.mission.envelope.T, # parameter bounds are lists for min in each dimension and max in each dimension
             n = 1,
             q = nsamples,
             seed = self.seed,

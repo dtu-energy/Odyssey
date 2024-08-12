@@ -68,6 +68,6 @@ class Random_Navigator(Navigator):
             torch.Tensor: The next sample.
         """
 
-        candidate = torch.rand(self.mission.param_dims) * self.traj_bounds[-1]
+        candidate = torch.rand(self.mission.param_dims) * self.mission.envelope.T[1]
 
         return candidate[None, :]
