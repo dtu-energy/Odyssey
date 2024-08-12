@@ -93,7 +93,7 @@ class SingleGP_Navigator(Navigator):
         # TODO: Connect input_transform and outcome_transform to input_scaling and data_standardization
         self.model = SingleTaskGP(self.mission.train_X, self.mission.train_Y, 
                                   #input_transform=Normalize(d=self.mission.param_dims),  
-                                  outcome_transform=Standardize(m=self.mission.output_dims)
+                                  #outcome_transform=Standardize(m=self.mission.output_dims)
                                   )
         self.mll = ExactMarginalLogLikelihood(self.model.likelihood, self.model)
         _ = fit_gpytorch_mll(self.mll)
@@ -146,9 +146,9 @@ class SingleGP_Navigator(Navigator):
                 raw_samples = 512
             )
 
-        # Convert input data if scaling enabled
-        if self.input_scaling:
-            candidate = unnormalize(candidate, self.mission.envelope)
+            # Convert input data if scaling enabled
+            if self.input_scaling:
+                candidate = unnormalize(candidate, self.mission.envelope)
 
         return candidate
 

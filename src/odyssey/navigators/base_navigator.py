@@ -250,14 +250,6 @@ class Navigator(ABC):
 
         for f in range(len(self.mission.funcs)):
             
-            # Convert input data if scaling enabled
-            # if self.input_scaling:
-            #     if init:
-            #         input_data = unnormalize(input_data, self.mission.envelope)
-            
-
-            # output = self.mission.funcs[f](input_data)
-
             for d in range(len(input_data)):
                 data = input_data[d].unsqueeze(0)
                 probed_value = self.mission.funcs[f](data)
@@ -266,10 +258,6 @@ class Navigator(ABC):
                     output = probed_value
                 else:
                     output = torch.cat((output, probed_value), dim = 0)
-
-            # Ensure Maximization problem
-            if self.mission.maneuvers[f] == 'descend':
-                output = -output
                 
             # Ensure > 1D output
             if output.dim() < 2:
@@ -281,21 +269,6 @@ class Navigator(ABC):
             else:
                 output_all = torch.cat((output_all, output), dim=1)
 
-        # Calculate initial data mean and std
-        if init:
-            self.init_train_Y_mean = output_all.mean(dim=0)
-            self.init_train_Y_std = output_all.std(dim=0)
-
-        # Perform Data Standardization based on initial data mean and std
-        if self.data_standardization:
-            output_all = standardize(
-                output_all, 
-                mean = self.init_train_Y_mean, 
-                std = self.init_train_Y_std
-            )
-                
-            
-        
         return output_all
 
                 
