@@ -34,9 +34,11 @@ class Mission(ABC):
 
     def __init__(self, 
                  name: str,
-                 funcs: list, 
-                 maneuvers: list, 
-                 envelope: Union[list, np.ndarray, torch.Tensor],
+                 parameters: list,
+                 objectives: list,
+                #  funcs: list, 
+                #  maneuvers: list, 
+                #  envelope: Union[list, np.ndarray, torch.Tensor],
                  log_data: bool = False,
         ):  
 
@@ -50,18 +52,33 @@ class Mission(ABC):
             envelope (Union[list, np.ndarray, torch.Tensor]): Defines the parameter space for the optimization problem.
         """
 
+        self._params = parameters
+        self._objectives = objectives
+        self.funcs = []
+
         # TODO If mission with same name already exists, do something
 
-        for index, maneuver in enumerate(maneuvers):
-            if maneuver not in ['ascend', 'descend']:
-                raise ValueError(f"Maneuver '{maneuver}' at index {index} is invalid. Maneuvers must be either 'ascend' or 'descend'")
+        # for index, maneuver in enumerate(maneuvers):
+        #     if maneuver not in ['ascend', 'descend']:
+        #         raise ValueError(f"Maneuver '{maneuver}' at index {index} is invalid. Maneuvers must be either 'ascend' or 'descend'")
 
-        self.funcs = funcs
-        self.maneuvers = maneuvers
-        self.envelope = torch.tensor(envelope)
+        for param in self._params:
+            assert param.get("name", None) is not None, "parameter must have name item"
+            assert param.get("envelope", None) is not None, "parameter must have envelope item"
 
-        self.param_dims = self.envelope.shape[0]
-        self.output_dims = len(self.maneuvers)
+        for objective in self._objectives:
+            assert objective.get("name", None) is not None, "objective must have name"
+            assert objective.get("maneuver", None) in ["ascend", "descend"] , "objective maneuver either 'ascend' or descend'"
+            if "func" in objective:
+                self.funcs.append(objective["func"])
+
+        # self.funcs = funcs
+        
+        self.maneuvers = [ x["maneuver"] for x in self._objectives ]
+        self.envelope = torch.tensor([ x["envelope"] for x in self._params ])
+
+        self.param_dims = len(parameters)
+        self.output_dims = len(objectives)
         self.log_data = log_data
         
         # Setup Logfile
@@ -79,7 +96,7 @@ class Mission(ABC):
             param_list = [f"param_{i}" for i in range(1, self.param_dims + 1)]
             objective_list = [f"objective_{i}" for i in range(1, self.output_dims + 1)]
 
-            self.columns = ['creation_timestamp'] + param_list + objective_list
+            self.columns = ['creation_timestamp'] + [x.name for x in self._param_dict.values()] + [ x["name"] for x in self._objective_dict.values()]
 
             # Write Columns to Logfile
             log_df = pd.DataFrame(columns=self.columns)
