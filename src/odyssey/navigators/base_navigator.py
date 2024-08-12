@@ -196,42 +196,42 @@ class Navigator(ABC):
 
         return self._get_next_trial(*args, **kwargs)
 
-    def relay(self, inputs, observation, *args, **kwargs):
+    def relay(self, inputs, observations, *args, **kwargs):
 
         """
-        Updates the training data and display data with the new trajectory and observation. 
-        Retains standardization and scaling for training data, but reverts to original scale for display data.
-        Logs display data to mission logfile.
+        Updates the training data and display data with the new inputs and observation. 
 
         Args:
-            trajectory: The new trajectory.
-            observation: The new observation.
+            inputs: The trial inputs associated with the observations.
+            observations: The new observation.
         """
+        # relay raw inputs and outputs
+        self.mission.display_X = torch.cat((self.mission.display_X, inputs))
+        self.mission.display_Y = torch.cat((self.mission.display_Y, observations))
 
-        # Calculate initial data mean and std
-        if kwargs.get("init", False):
-            self.init_train_Y_mean = output_all.mean(dim=0)
-            self.init_train_Y_std = output_all.std(dim=0)
+        descend_indices = [idx for idx, value in enumerate(self.mission.maneuvers) if value == 'descend']
+        observations[:, descend_indices] *= -1
 
-        # Perform Data Standardization based on initial data mean and std
-        if self.data_standardization:
-            output_all = standardize(
-                output_all, 
-                mean = self.init_train_Y_mean, 
-                std = self.init_train_Y_std
-            )
-
-        # Relay train data
+        # normalize and relay training input data
+        if self.input_scaling:
+            inputs = normalize(inputs, self.mission.envelope)
         self.mission.train_X = torch.cat((self.mission.train_X, inputs))
-        self.mission.train_Y = torch.cat((self.mission.train_Y, observation))
 
-        # Relay display data 
-        self.mission.display_X, self.mission.display_Y = self.generate_display_data()
+        # standardise and relay training output data
+        if len(self.mission.display_Y) >= self.n_init and self.data_standardization:
+            self.mission.train_Y = self.mission.display_Y.clone()
+            self.mission.train_Y = standardize(
+                self.mission.train_Y,
+                mean = self.mission.train_Y.mean(dim=0),
+                std = self.mission.display_Y.std(dim=0),
+            )
+        else:
+            self.mission.train_Y = torch.cat((self.mission.train_Y, observations))
 
         # Log data
         ## Case where only one trajectory point and one observation point is observed (q=1)
-        data_dict = self.generate_log_data(init = False)
         if self.mission.log_data:
+            data_dict = self.generate_log_data(init = False)
             self.mission.write_to_logfile(data = data_dict)
         
     
