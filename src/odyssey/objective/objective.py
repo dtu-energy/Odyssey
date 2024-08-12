@@ -25,7 +25,7 @@ class Objective:
     """
 
 
-    def __init__(self, func, *args, **kwargs):
+    def __init__(self, func=None, *args, **kwargs):
 
         """
         Initializes the Objective class with the given function and arguments.
@@ -55,6 +55,8 @@ class Objective:
             torch.Tensor: The processed output of the function.
         """
         
+        assert self.func is not None, "cannot evaluate objective function, no python function associated"
+
         merged_args = (*self.args, *args)
         merged_kwargs = {**self.kwargs, **kwargs}
 
