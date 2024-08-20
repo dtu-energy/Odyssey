@@ -105,14 +105,12 @@ class BaybeNavigator(Navigator):
     def _list_to_dataframe(self, inputs, outputs=None):
 
         if outputs is None:
-            data = inputs
             columns = self._param_names
         else:
-            data = torch.cat((inputs, outputs), axis=-1)
-            columns = self._param_names + self._objective_names # assuming output values ordered as objectives
+            columns = self._param_names + self._objective_names
 
         return pd.DataFrame(
-            data=data,
+            data=torch.cat((inputs, outputs), axis=-1),
             columns=columns
         )
 
