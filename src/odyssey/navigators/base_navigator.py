@@ -218,7 +218,7 @@ class Navigator(ABC):
         self.mission.train_X = torch.cat((self.mission.train_X, inputs))
 
         # standardise and relay training output data
-        if len(self.mission.display_Y) >= self.n_init and self.data_standardization:
+        if self.data_standardization and self.requires_init_data and len(self.mission.display_Y) >= self.n_init:
             self.mission.train_Y = self.mission.display_Y.clone()
             self.mission.train_Y = standardize(
                 self.mission.train_Y,
