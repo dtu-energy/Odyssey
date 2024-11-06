@@ -78,7 +78,7 @@ class SingleGP_Navigator(Navigator):
         
         super().__init__(*args, **kwargs)
 
-        assert len(self.mission.funcs) == 1, "SingleGPNavigator only supports single output missions"
+        assert len(self.mission._objectives) == 1, "SingleGPNavigator only supports single output missions"
 
         # Acquisition Function definition
         self.acq_function_type = acq_function_type
