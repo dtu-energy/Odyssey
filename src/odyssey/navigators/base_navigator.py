@@ -158,8 +158,9 @@ class Navigator(ABC):
             display_X_subset = display_X_subset.unsqueeze(0)
             display_Y_subset = display_Y_subset.unsqueeze(0)
 
-        trajectory_dict = {f'param_{i+1}': display_X_subset[:, i].tolist() for i in range(display_X_subset.shape[1])}
-        observation_dict = {f'objective_{i+1}': display_Y_subset[:, i].tolist() for i in range(display_Y_subset.shape[1])}
+        trajectory_dict = {f'{self.mission._params[i]["name"]}': display_X_subset[:, i].tolist() for i in range(display_X_subset.shape[1])}
+        observation_dict = {f'{self.mission._objectives[i]["name"]}': display_Y_subset[:, i].tolist() for i in range(display_Y_subset.shape[1])}
+
         data_dict = {**trajectory_dict, **observation_dict}
 
         return data_dict

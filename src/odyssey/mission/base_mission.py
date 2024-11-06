@@ -96,7 +96,7 @@ class Mission(ABC):
             param_list = [f"param_{i}" for i in range(1, self.param_dims + 1)]
             objective_list = [f"objective_{i}" for i in range(1, self.output_dims + 1)]
 
-            self.columns = ['creation_timestamp'] + [x.name for x in self._param_dict.values()] + [ x["name"] for x in self._objective_dict.values()]
+            self.columns = ['creation_timestamp'] + [ x["name"] for x in self._params ] + [ x["name"] for x in self._objectives ]
 
             # Write Columns to Logfile
             log_df = pd.DataFrame(columns=self.columns)
