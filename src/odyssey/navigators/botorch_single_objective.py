@@ -56,14 +56,14 @@ class BOTorch_SingleGP_Navigator(Navigator):
     requires_init_data = True
     
     _acq_funcs = {
-        "expected_improvement": qLogNoisyExpectedImprovement,
+        "expected_improvement": qLogExpectedImprovement,
         "upper_confidence_bound": qUpperConfidenceBound,
         "probability_of_improvement": qProbabilityOfImprovement,
         "simple_regret": qSimpleRegret,
     }
 
     _acq_func_default_params = {
-        "expected_improvement": {'X_baseline': None},
+        "expected_improvement": {'best_f': None}, #{'X_baseline': None},
         "upper_confidence_bound": {'beta': 0.1},
         "probability_of_improvement": {'best_f': None},
         "simple_regret": {},

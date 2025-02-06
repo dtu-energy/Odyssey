@@ -43,7 +43,7 @@ class SMACNavigator(Navigator):
 
     def _inputs_to_trial_info(self, inputs):
         values = {}
-        for i, value in enumerate(inputs):
+        for i, value in enumerate(inputs.squeeze()):
             values[self._param_names[i]] = value.item()
         
         return TrialInfo(
