@@ -1,3 +1,4 @@
 # Ignore installation files
 src/odyssey.egg-info/
 __pycache__*
+*.DS_Store
