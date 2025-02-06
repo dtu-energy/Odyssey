@@ -2,10 +2,7 @@
 
 A modular, customizable Bayesian Optimization software module for single and multi-objective optimization.
 
-See the [documentation website](https://odyssey-51edb0.gitlab.io/) 
-for further details, examples, and the API reference.
-
-See also the [original repository](https://gitlab.com/auto_lab/odyssey)
+See also the [original repository](https://gitlab.com/auto_lab/odyssey) and its [documentation website](https://odyssey-51edb0.gitlab.io/).
 
 ## Getting Started
 
